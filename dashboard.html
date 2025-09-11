@@ -69,6 +69,13 @@ async function inviteToCollaborate(startupId) {
     const { data, error } = await supabase.from("invitations").insert([
       { sender_uid: senderUid, startup_id: startupIdNumber }
     ]);
+
+    if (error) {
+    console.error("Error sending invitation:", error);
+    alert("Failed to send invitation: " + error.message);
+  } else {
+    alert("✅ Invitation sent successfully!");
+  }
   }
     
     // Invitation sent handler
