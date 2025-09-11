@@ -53,7 +53,7 @@
     checkUser();
 
       
-      async function inviteToCollaborate(startupId) {
+      async function inviteToCollaborate(startupId, button) {
 
       button.disabled = true;
       button.textContent = "Invitation sent!";
@@ -129,7 +129,7 @@
           const inviteBtn = card.querySelector(".invite-btn");
           inviteBtn.addEventListener("click", function () {
             const startupId = inviteBtn.getAttribute("data-startup-id");
-            inviteToCollaborate(startupId);
+            inviteToCollaborate(startupId, inviteBtn);
         });
       });
     }
