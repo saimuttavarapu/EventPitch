@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - StartupCollab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between">
+    <h1 class="text-xl font-bold text-blue-600">StartupCollab</h1>
+    <div>
+      <a href="index.html" class="mx-2 text-gray-600 hover:text-blue-600">Home</a>
+      <a href="register.html" class="mx-2 text-gray-600 hover:text-blue-600">Register</a>
+      <a href="login.html" class="mx-2 text-blue-600 font-semibold">Login</a>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+  <section class="max-w-md mx-auto mt-12 bg-white shadow-lg p-8 rounded-lg">
+    <h2 class="text-2xl font-bold text-gray-800 text-center">Login</h2>
+
+    <form id="loginForm" class="mt-6 space-y-4">
+      <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded" required />
+      <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded" required />
+
+      <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
+        Login
+      </button>
+    </form>
+
+    <p id="message" class="mt-4 text-center text-sm text-gray-600"></p>
+    <p class="mt-4 text-center text-sm text-gray-600">
+      Don’t have an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign Up</a>
+    </p>
+  </section>
+
+  <script>
+    // Initialize Supabase client
+    const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co"; // replace
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI"; // replace
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        message.textContent = "❌ " + error.message;
+        message.classList.add("text-red-600");
+      } else {
+        message.textContent = "✅ Logged in successfully!";
+        message.classList.add("text-green-600");
+
+        // redirect to home (or dashboard)
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+      }
+    });
+  </script>
+
+</body>
+</html>
