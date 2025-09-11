@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - StartupCollab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between">
+    <h1 class="text-xl font-bold text-blue-600">StartupCollab</h1>
+    <div>
+      <a href="index.html" class="mx-2 text-gray-600 hover:text-blue-600">Home</a>
+      <a href="register.html" class="mx-2 text-gray-600 hover:text-blue-600">Register</a>
+      <a href="login.html" class="mx-2 text-gray-600 hover:text-blue-600">Login</a>
+    </div>
+  </nav>
+
+  <!-- Signup Form -->
+  <section class="max-w-md mx-auto mt-12 bg-white shadow-lg p-8 rounded-lg">
+    <h2 class="text-2xl font-bold text-gray-800 text-center">Sign Up</h2>
+
+    <form id="signupForm" class="mt-6 space-y-4">
+      <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded" required />
+      <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded" required />
+      <input type="text" id="fullName" placeholder="Full Name (optional)" class="w-full p-3 border rounded" />
+
+      <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
+        Sign Up
+      </button>
+    </form>
+
+    <p id="message" class="mt-4 text-center text-sm text-gray-600"></p>
+    <p class="mt-4 text-center text-sm text-gray-600">
+      Already have an account? <a href="login.html" class="text-blue-600 hover:underline">Login</a>
+    </p>
+  </section>
+
+  <script>
+    const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co"; // replace
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI"; // replace
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById("signupForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const fullName = document.getElementById("fullName").value;
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: fullName } // optional user metadata
+        }
+      });
+
+      if (error) {
+        message.textContent = "❌ " + error.message;
+        message.classList.add("text-red-600");
+      } else {
+        message.textContent = "✅ Signup successful! Please check your email to confirm your account.";
+        message.classList.add("text-green-600");
+        form.reset();
+
+        // Optional: redirect after signup
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+      }
+    });
+  </script>
+
+</body>
+</html>
