@@ -63,10 +63,11 @@ async function inviteToCollaborate(startupId) {
     }
 
     const senderUid = user.id;
+  const startupIdNumber = parseInt(startupId, 10);
 
     // Insert into invitations table
     const { data, error } = await supabase.from("invitations").insert([
-      { sender_uid: senderUid, startup_id: startupId }
+      { sender_uid: senderUid, startup_id: startupIdNumber }
     ]);
   }
     
