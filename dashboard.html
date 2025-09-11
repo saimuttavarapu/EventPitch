@@ -54,6 +54,13 @@
 
       
       async function inviteToCollaborate(startupId) {
+
+      button.disabled = true;
+      button.textContent = "Invitation sent!";
+      button.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
+      button.classList.remove("bg-blue-600", "hover:bg-blue-700");
+
+
         if (!startupId) {
           alert("Invalid startup ID");
           return;
@@ -79,7 +86,10 @@
         }
       }
 
+    // Invitation sent handler
+    function handleInvite(startupName, button) {
 
+    }
     // Fetch startups
     async function loadStartups() {
       const { data, error } = await supabase.from("startups").select("*");
