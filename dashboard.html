@@ -52,44 +52,33 @@
 
     checkUser();
 
+      
+      async function inviteToCollaborate(startupId) {
+        if (!startupId) {
+          alert("Invalid startup ID");
+          return;
+        }
+      
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          alert("You must be logged in to send an invitation.");
+          return;
+        }
+      
+        const senderUid = user.id;
+      
+        const { data, error } = await supabase
+          .from("invitations")
+          .insert([{ sender_uid: senderUid, startup_id: startupId }]);
+      
+        if (error) {
+          console.error("Error sending invitation:", error);
+          alert("Failed to send invitation: " + error.message);
+        } else {
+          alert("✅ Invitation sent successfully!");
+        }
+      }
 
-async function inviteToCollaborate(startupId) {
-    // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      alert("You must be logged in to send an invitation.");
-      return;
-    }
-
-    const senderUid = user.id;
-  const startupIdNumber = parseInt(startupId, 10);
-
-    // Insert into invitations table
-    const { data, error } = await supabase.from("invitations").insert([
-      { sender_uid: senderUid, startup_id: startupIdNumber }
-    ]);
-
-    if (error) {
-    console.error("Error sending invitation:", error);
-    alert("Failed to send invitation: " + error.message);
-  } else {
-    alert("✅ Invitation sent successfully!");
-  }
-  }
-    
-    // Invitation sent handler
-    function handleInvite(startupName, button) {
-      button.disabled = true;
-      button.textContent = "Invitation sent!";
-      button.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
-      button.classList.remove("bg-blue-600", "hover:bg-blue-700");
-
-      // Show message (basic alert - could be improved)
-      alert(
-        `Your invitation was sent to "${startupName}". Stay tuned for an update from them!`
-      );
-    }
 
     // Fetch startups
     async function loadStartups() {
@@ -117,19 +106,20 @@ async function inviteToCollaborate(startupId) {
           </div>
           <button
             class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition font-medium invite-btn"
-            data-startup-name="${startup.name}"
+            data-startup-id="${startup.id}"
           >
             Invite to Collaborate
           </button>
+
         `;
 
         container.appendChild(card);
 
         // Attach event listener to the button
-        const inviteBtn = card.querySelector(".invite-btn");
-        inviteBtn.addEventListener("click", function () {
-          handleInvite(startup.name, inviteBtn);
-          inviteToCollaborate(startup.ID)
+          const inviteBtn = card.querySelector(".invite-btn");
+          inviteBtn.addEventListener("click", function () {
+            const startupId = inviteBtn.getAttribute("data-startup-id");
+            inviteToCollaborate(startupId);
         });
       });
     }
