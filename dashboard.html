@@ -27,46 +27,33 @@
     </p>
   </div>
 
+
   
-  <div id="startup-list" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"></div>
+<!-- 
+  <section class="max-w-6xl mx-auto mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="startupContainer">
+    <!-- Startup cards will be injected here -->
+  </section>
 
-<script>
-  const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI";
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <script>
+    const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co"; // replace
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI"
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Fetch startups and render cards
-  async function loadStartups() {
-    const { data: startups, error } = await supabase.from("startups").select("*");
+    const container = document.getElementById("startupContainer");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    if (error) {
-      console.error("Error loading startups:", error.message);
-      return;
+    // Check if user is logged in
+    async function checkUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.href = "login.html";
+      }
     }
 
-    const container = document.getElementById("startup-list");
-    container.innerHTML = "";
+    checkUser();
 
-    startups.forEach((startup) => {
-      const card = document.createElement("div");
-      card.className = "bg-white shadow-lg rounded-lg p-6";
 
-      card.innerHTML = `
-        <h3 class="text-xl font-bold text-gray-800">${startup.title}</h3>
-        <p class="mt-2 text-gray-600">${startup.description || ""}</p>
-        <button 
-          onclick="inviteToCollaborate('${startup.id}')"
-          class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Invite to Collaborate
-        </button>
-      `;
-
-      container.appendChild(card);
-    });
-  }
-
-  // Handle invitation insert
-  async function inviteToCollaborate(startupId) {
+async function inviteToCollaborate(startupId) {
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -81,21 +68,72 @@
     const { data, error } = await supabase.from("invitations").insert([
       { sender_uid: senderUid, startup_id: startupId }
     ]);
-
-    if (error) {
-      console.error("Error sending invitation:", error.message);
-      alert("Failed to send invitation: " + error.message);
-    } else {
-      alert("✅ Invitation sent successfully!");
-    }
   }
+    
+    // Invitation sent handler
+    function handleInvite(startupName, button) {
+      button.disabled = true;
+      button.textContent = "Invitation sent!";
+      button.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
+      button.classList.remove("bg-blue-600", "hover:bg-blue-700");
 
-  loadStartups();
-</script>
+      // Show message (basic alert - could be improved)
+      alert(
+        `Your invitation was sent to "${startupName}". Stay tuned for an update from them!`
+      );
+    }
 
+    // Fetch startups
+    async function loadStartups() {
+      const { data, error } = await supabase.from("startups").select("*");
+      if (error) {
+        container.innerHTML = `<p class="text-red-600">Error loading startups: ${error.message}</p>`;
+        return;
+      }
 
+      if (!data || data.length === 0) {
+        container.innerHTML = `<p class="text-gray-600 text-center col-span-full">No startups registered yet.</p>`;
+        return;
+      }
 
+      container.innerHTML = "";
+      data.forEach(startup => {
+        const card = document.createElement("div");
+        card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
 
+        card.innerHTML = `
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">${startup.name}</h3>
+            <p class="text-gray-600 mb-1"><strong>Industry:</strong> ${startup.industry}</p>
+            <p class="text-gray-600 mb-4">${startup.description}</p>
+          </div>
+          <button
+            class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition font-medium invite-btn"
+            data-startup-name="${startup.name}"
+          >
+            Invite to Collaborate
+          </button>
+        `;
+
+        container.appendChild(card);
+
+        // Attach event listener to the button
+        const inviteBtn = card.querySelector(".invite-btn");
+        inviteBtn.addEventListener("click", function () {
+          handleInvite(startup.name, inviteBtn);
+          inviteToCollaborate(startup.ID)
+        });
+      });
+    }
+
+    loadStartups();
+
+    // Logout function
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.href = "login.html";
+    });
+  </script>
 
 
 </body>
