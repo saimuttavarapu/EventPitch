@@ -7,22 +7,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
   <!-- Navbar -->
   <nav class="bg-white shadow p-4 flex justify-between">
     <h1 class="text-xl font-bold text-blue-600">StartupCollab</h1>
     <div>
       <a href="index.html" class="mx-2 text-gray-600 hover:text-blue-600">Home</a>
-       <a href="login.html" class="mx-2 text-gray-600 hover:text-blue-600">Log in</a>
-         <a href="signup.html" class="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700">
-         Sign UP
-          </a>
+      <a href="login.html" class="mx-2 text-gray-600 hover:text-blue-600">Log in</a>
+      <a href="signup.html" class="mx-2 mt-0 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700">
+        Sign UP
+      </a>
     </div>
   </nav>
 
   <!-- Hero Section -->
-  <section class="text-center py-16">
+  <section class="text-center py-16 flex-grow">
     <h2 class="text-3xl font-bold text-gray-800">Connect • Collaborate • Grow</h2>
     <p class="mt-4 text-gray-600">
       Register your startup, find collaborators, and create events to invite users & investors.
@@ -30,9 +30,17 @@
     <a href="signup.html" class="mt-6 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700">
       Get Started
     </a>
+    <div class="mt-8 mx-auto max-w-2xl text-gray-700 text-lg">
+      <p>
+        StartupCollab is your gateway to an ecosystem of innovators, entrepreneurs, and investors. Whether you're looking to launch your idea, grow your team, or find the right partners, our platform makes collaboration seamless and effective.
+      </p>
+      <p class="mt-4">
+        Discover ongoing projects, join inspiring events, or showcase your own startup to attract talent and funding. With StartupCollab, every connection brings you closer to success.
+      </p>
+    </div>
   </section>
 
-  <footer class="text-center py-6 text-gray-500 text-sm bg-white shadow-inner">
+  <footer class="text-center py-6 text-gray-500 text-sm bg-white shadow-inner mt-auto">
     © 2025 StartupCollab
   </footer>
 </body>
