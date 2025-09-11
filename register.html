@@ -58,7 +58,7 @@
 
       const { data, error } = await supabase
         .from("startups")
-        .insert([{ name, email, industry, description }]);
+        .insert([{ name, email, industry, description, password }]);
 
       if (error) {
         message.textContent = "❌ Error: " + error.message;
