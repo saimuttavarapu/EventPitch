@@ -26,7 +26,6 @@
     <form id="registerForm" class="mt-6 space-y-4">
       <input type="text" id="name" placeholder="Startup Name" class="w-full p-3 border rounded" required />
       <input type="email" id="email" placeholder="Contact Email" class="w-full p-3 border rounded" required />
-      <input type="text" id="password" placeholder="password" class="w-full p-3 border rounded" required />
       <input type="text" id="industry" placeholder="Industry" class="w-full p-3 border rounded" required />
       <textarea id="description" placeholder="Short Description" class="w-full p-3 border rounded"></textarea>
 
@@ -52,14 +51,13 @@
 
       const name = document.getElementById("name").value;
       const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
       const industry = document.getElementById("industry").value;
       const description = document.getElementById("description").value;
       
 
       const { data, error } = await supabase
         .from("startups")
-        .insert([{ name, email, industry, description, password }]);
+        .insert([{ name, email, industry, description}]);
 
       if (error) {
         message.textContent = "❌ Error: " + error.message;
