@@ -91,48 +91,74 @@
 
     }
     // Fetch startups
-    async function loadStartups() {
-      const { data, error } = await supabase.from("startups").select("*");
-      if (error) {
-        container.innerHTML = `<p class="text-red-600">Error loading startups: ${error.message}</p>`;
-        return;
-      }
+async function loadStartups() {
+  const { data: startups, error } = await supabase.from("startups").select("*");
+  if (error) {
+    container.innerHTML = `<p class="text-red-600">Error loading startups: ${error.message}</p>`;
+    return;
+  }
 
-      if (!data || data.length === 0) {
-        container.innerHTML = `<p class="text-gray-600 text-center col-span-full">No startups registered yet.</p>`;
-        return;
-      }
+  if (!startups || startups.length === 0) {
+    container.innerHTML = `<p class="text-gray-600 text-center col-span-full">No startups registered yet.</p>`;
+    return;
+  }
 
-      container.innerHTML = "";
-      data.forEach(startup => {
-        const card = document.createElement("div");
-        card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
+  // Get logged-in user
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
 
-        card.innerHTML = `
-          <div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">${startup.name}</h3>
-            <p class="text-gray-600 mb-1"><strong>Industry:</strong> ${startup.industry}</p>
-            <p class="text-gray-600 mb-4">${startup.description}</p>
-          </div>
-          <button
-            class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition font-medium invite-btn"
-            data-startup-id="${startup.id}"
-          >
-            Invite to Collaborate
-          </button>
+  container.innerHTML = "";
 
-        `;
+  for (let startup of startups) {
+    const card = document.createElement("div");
+    card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
 
-        container.appendChild(card);
+    card.innerHTML = `
+      <div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">${startup.name}</h3>
+        <p class="text-gray-600 mb-1"><strong>Industry:</strong> ${startup.industry}</p>
+        <p class="text-gray-600 mb-4">${startup.description}</p>
+      </div>
+      <button
+        class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition font-medium invite-btn"
+        data-startup-id="${startup.id}"
+      >
+        Invite to Collaborate
+      </button>
+    `;
 
-        // Attach event listener to the button
-          const inviteBtn = card.querySelector(".invite-btn");
-          inviteBtn.addEventListener("click", function () {
-            const startupId = inviteBtn.getAttribute("data-startup-id");
-            inviteToCollaborate(startupId, inviteBtn);
+    container.appendChild(card);
+
+    const inviteBtn = card.querySelector(".invite-btn");
+
+    // Check if invitation already exists
+    const { data: existingInvitation } = await supabase
+      .from("invitations")
+      .select("*")
+      .eq("sender_uid", user.id)
+      .eq("startup_id", startup.id)
+      .single();
+
+    if (existingInvitation) {
+      // Disable button if invitation already sent
+      inviteBtn.disabled = true;
+      inviteBtn.textContent = "Invitation sent!";
+      inviteBtn.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
+      inviteBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
+    } else {
+      // Attach click listener only if invitation not sent
+      inviteBtn.addEventListener("click", function () {
+        inviteToCollaborate(startup.id).then(() => {
+          inviteBtn.disabled = true;
+          inviteBtn.textContent = "Invitation sent!";
+          inviteBtn.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
+          inviteBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
         });
       });
     }
+  }
+}
+
 
     loadStartups();
 
