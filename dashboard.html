@@ -19,13 +19,21 @@
     </div>
   </nav>
 
-  <section class="max-w-6xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="startupContainer">
+  <!-- Heading and Description above cards -->
+  <div class="max-w-6xl mx-auto mt-8 mb-4 px-4">
+    <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-2">Browse the Progress</h2>
+    <p class="text-lg text-gray-700 font-medium text-center">
+      Browse registered startups and find the right partners to co-create, attract investors, and scale faster.
+    </p>
+  </div>
+
+  <section class="max-w-6xl mx-auto mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="startupContainer">
     <!-- Startup cards will be injected here -->
   </section>
 
   <script>
     const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co"; // replace
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI"; // replace
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjG[...]"
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const container = document.getElementById("startupContainer");
@@ -40,6 +48,19 @@
     }
 
     checkUser();
+
+    // Invitation sent handler
+    function handleInvite(startupName, button) {
+      button.disabled = true;
+      button.textContent = "Invitation sent!";
+      button.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
+      button.classList.remove("bg-blue-600", "hover:bg-blue-700");
+
+      // Show message (basic alert - could be improved)
+      alert(
+        `Your invitation was sent to "${startupName}". Stay tuned for an update from them!`
+      );
+    }
 
     // Fetch startups
     async function loadStartups() {
@@ -57,15 +78,29 @@
       container.innerHTML = "";
       data.forEach(startup => {
         const card = document.createElement("div");
-        card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition";
+        card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
 
         card.innerHTML = `
-          <h3 class="text-xl font-bold text-gray-800 mb-2">${startup.name}</h3>
-          <p class="text-gray-600 mb-1"><strong>Industry:</strong> ${startup.industry}</p>
-          <p class="text-gray-600">${startup.description}</p>
+          <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">${startup.name}</h3>
+            <p class="text-gray-600 mb-1"><strong>Industry:</strong> ${startup.industry}</p>
+            <p class="text-gray-600 mb-4">${startup.description}</p>
+          </div>
+          <button
+            class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition font-medium invite-btn"
+            data-startup-name="${startup.name}"
+          >
+            Invite to Collaborate
+          </button>
         `;
 
         container.appendChild(card);
+
+        // Attach event listener to the button
+        const inviteBtn = card.querySelector(".invite-btn");
+        inviteBtn.addEventListener("click", function () {
+          handleInvite(startup.name, inviteBtn);
+        });
       });
     }
 
