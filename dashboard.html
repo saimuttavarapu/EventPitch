@@ -103,13 +103,22 @@ async function loadStartups() {
     return;
   }
 
-  // Get logged-in user
+  // Get current logged-in user
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
+  // Fetch all invitations sent by this user
+  const { data: sentInvitations } = await supabase
+    .from("invitations")
+    .select("startup_id")
+    .eq("sender_uid", user.id);
+
+  // Create a Set for fast lookup
+  const invitedStartups = new Set(sentInvitations.map(inv => inv.startup_id));
+
   container.innerHTML = "";
 
-  for (let startup of startups) {
+  startups.forEach(startup => {
     const card = document.createElement("div");
     card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
 
@@ -131,33 +140,26 @@ async function loadStartups() {
 
     const inviteBtn = card.querySelector(".invite-btn");
 
-    // Check if invitation already exists
-    const { data: existingInvitation } = await supabase
-      .from("invitations")
-      .select("*")
-      .eq("sender_uid", user.id)
-      .eq("startup_id", startup.id)
-      .single();
-
-    if (existingInvitation) {
-      // Disable button if invitation already sent
+    // Check if invitation already sent
+    if (invitedStartups.has(startup.id)) {
       inviteBtn.disabled = true;
       inviteBtn.textContent = "Invitation sent!";
       inviteBtn.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
       inviteBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
     } else {
-      // Attach click listener only if invitation not sent
-      inviteBtn.addEventListener("click", function () {
-        inviteToCollaborate(startup.id).then(() => {
-          inviteBtn.disabled = true;
-          inviteBtn.textContent = "Invitation sent!";
-          inviteBtn.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
-          inviteBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
-        });
+      inviteBtn.addEventListener("click", async () => {
+        await inviteToCollaborate(startup.id);
+
+        // Disable button immediately
+        inviteBtn.disabled = true;
+        inviteBtn.textContent = "Invitation sent!";
+        inviteBtn.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
+        inviteBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
       });
     }
-  }
+  });
 }
+
 
 
     loadStartups();
