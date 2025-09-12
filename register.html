@@ -45,6 +45,16 @@
 
     const form = document.getElementById("registerForm");
     const message = document.getElementById("message");
+    
+    // Check if user is logged in
+    async function checkUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        window.location.href = "login.html";
+      }
+    }
+
+    checkUser();
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
