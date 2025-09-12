@@ -134,28 +134,40 @@
         const card = document.createElement("div");
         card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
 
+        const { data: sentInvitations } = await supabase
+          .from("invitations")
+          .select("startup_id")
+          .eq("sender_uid", userId);
+        
+        const invitedStartups = new Set(sentInvitations.map(inv => inv.startup_id));
+        
+                
         card.innerHTML = `
           <div>
             <h3 class="text-xl font-bold text-gray-800 mb-2">${startup.name}</h3>
             <p class="text-gray-600 mb-1"><strong>Industry:</strong> ${startup.industry}</p>
             <p class="text-gray-600 mb-4">${startup.description}</p>
           </div>
+
           <button
-            class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition font-medium invite-btn"
-            data-startup-id="${startup.id}"
-          >
-            Invite to Collaborate
+              class="mt-2 ${invitationSent ? "bg-green-500 text-white cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"} px-4 py-2 rounded transition font-medium invite-btn"
+              data-startup-id="${startup.id}"
+              ${invitationSent ? "disabled" : ""}
+              >
+              ${invitationSent ? "Invitation sent!" : "Invite to Collaborate"}
           </button>
         `;
 
         container.appendChild(card);
 
         // Attach event listener to the button
-        const inviteBtn = card.querySelector(".invite-btn");
-        inviteBtn.addEventListener("click", function () {
-          const startupId = inviteBtn.getAttribute("data-startup-id");
-          inviteToCollaborate(startupId, inviteBtn);
-        });
+               if (!invitationSent) {
+                const inviteBtn = card.querySelector(".invite-btn");
+                inviteBtn.addEventListener("click", () => {
+                inviteToCollaborate(startup.id, inviteBtn);
+                    });
+                  }
+
       });
     }
 
