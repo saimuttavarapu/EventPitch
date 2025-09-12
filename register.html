@@ -58,7 +58,14 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-
+      
+     // First, get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        container.innerHTML = `<p class="text-red-600">Authentication error. Please login again.</p>`;
+        return;
+      }
+      const UID = user.id;
       const name = document.getElementById("name").value;
       const email = document.getElementById("email").value;
       const industry = document.getElementById("industry").value;
@@ -67,7 +74,7 @@
 
       const { data, error } = await supabase
         .from("startups")
-        .insert([{ name, email, industry, description}]);
+        .insert([{ name, email, industry, description, UID}]);
 
       if (error) {
         message.textContent = "❌ Error: " + error.message;
