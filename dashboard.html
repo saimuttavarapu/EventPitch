@@ -27,16 +27,13 @@
     </p>
   </div>
 
-
-  
-
   <section class="max-w-6xl mx-auto mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="startupContainer">
     <!-- Startup cards will be injected here -->
   </section>
 
   <script>
     const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co"; // replace
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI"
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjG[...]"
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const container = document.getElementById("startupContainer");
@@ -52,59 +49,78 @@
 
     checkUser();
 
-      
-      async function inviteToCollaborate(startupId, button) {
-
+    async function inviteToCollaborate(startupId, button) {
       button.disabled = true;
       button.textContent = "Invitation sent!";
       button.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
       button.classList.remove("bg-blue-600", "hover:bg-blue-700");
 
-
-        if (!startupId) {
-          alert("Invalid startup ID");
-          return;
-        }
-      
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          alert("You must be logged in to send an invitation.");
-          return;
-        }
-      
-        const senderUid = user.id;
-      
-        const { data, error } = await supabase
-          .from("invitations")
-          .insert([{ sender_uid: senderUid, startup_id: startupId }]);
-      
-        if (error) {
-          console.error("Error sending invitation:", error);
-          alert("Failed to send invitation: " + error.message);
-        } else {
-          alert("✅ Invitation sent successfully!");
-        }
-      }
-
-    // Invitation sent handler
-    function handleInvite(startupName, button) {
-
-    }
-    // Fetch startups
-    async function loadStartups() {
-      const { data, error } = await supabase.from("startups").select("*");
-      if (error) {
-        container.innerHTML = `<p class="text-red-600">Error loading startups: ${error.message}</p>`;
+      if (!startupId) {
+        alert("Invalid startup ID");
         return;
       }
 
-      if (!data || data.length === 0) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        alert("You must be logged in to send an invitation.");
+        return;
+      }
+
+      const senderUid = user.id;
+
+      const { data, error } = await supabase
+        .from("invitations")
+        .insert([{ sender_uid: senderUid, startup_id: startupId }]);
+
+      if (error) {
+        console.error("Error sending invitation:", error);
+        alert("Failed to send invitation: " + error.message);
+      } else {
+        alert("✅ Invitation sent successfully!");
+      }
+    }
+
+    // Fetch startups and check user's owned startups
+    async function loadStartups() {
+      // First, get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        container.innerHTML = `<p class="text-red-600">Authentication error. Please login again.</p>`;
+        return;
+      }
+      const userId = user.id;
+
+      // Fetch all startups
+      const { data: startups, error: startupsError } = await supabase.from("startups").select("*");
+      if (startupsError) {
+        container.innerHTML = `<p class="text-red-600">Error loading startups: ${startupsError.message}</p>`;
+        return;
+      }
+
+      // If no startups in the table at all
+      if (!startups || startups.length === 0) {
         container.innerHTML = `<p class="text-gray-600 text-center col-span-full">No startups registered yet.</p>`;
         return;
       }
 
+      // Check if the current user has registered any startup
+      // Assuming the "startups" table has a "user_id" or "owner_id" column
+      // Try both, fallback to "user_id" as default
+      let myStartups = startups.filter(s => s.UID === userId);
+      if (!myStartups || myStartups.length === 0) {
+        // User has not registered any startup
+        container.innerHTML = `
+          <div class="col-span-full flex flex-col items-center justify-center py-8">
+            <p class="text-gray-700 text-lg mb-4">Please register your startup to see registered startups.</p>
+            <a href="register.html" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium shadow transition">Register your Startup</a>
+          </div>
+        `;
+        return;
+      }
+
+      // User has registered at least one startup, display all startups as cards
       container.innerHTML = "";
-      data.forEach(startup => {
+      startups.forEach(startup => {
         const card = document.createElement("div");
         card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
 
@@ -120,16 +136,15 @@
           >
             Invite to Collaborate
           </button>
-
         `;
 
         container.appendChild(card);
 
         // Attach event listener to the button
-          const inviteBtn = card.querySelector(".invite-btn");
-          inviteBtn.addEventListener("click", function () {
-            const startupId = inviteBtn.getAttribute("data-startup-id");
-            inviteToCollaborate(startupId, inviteBtn);
+        const inviteBtn = card.querySelector(".invite-btn");
+        inviteBtn.addEventListener("click", function () {
+          const startupId = inviteBtn.getAttribute("data-startup-id");
+          inviteToCollaborate(startupId, inviteBtn);
         });
       });
     }
@@ -142,7 +157,6 @@
       window.location.href = "login.html";
     });
   </script>
-
 
 </body>
 </html>
