@@ -31,23 +31,21 @@
     <!-- Startup cards will be injected here -->
   </section>
   <script>
-  const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co"; // replace if needed
+  const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI";
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const container = document.getElementById("startupContainer");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  // Redirect to login if not logged in
+  // Redirect to login if user not logged in
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      window.location.href = "login.html";
-    }
+    if (!session) window.location.href = "login.html";
   }
   checkUser();
 
-  // Invite function
+  // Invite button handler
   async function inviteToCollaborate(startupId, button) {
     button.disabled = true;
     button.textContent = "Invitation sent!";
@@ -61,7 +59,7 @@
     }
 
     const senderUid = user.id;
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("invitations")
       .insert([{ sender_uid: senderUid, startup_id: startupId }]);
 
@@ -74,7 +72,7 @@
   }
 
   async function loadStartups() {
-    // Fetch current user
+    // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
       container.innerHTML = `<p class="text-red-600">Authentication error. Please login again.</p>`;
@@ -89,17 +87,12 @@
       return;
     }
 
-    if (!startups || startups.length === 0) {
-      container.innerHTML = `<p class="text-gray-600 text-center col-span-full">No startups registered yet.</p>`;
-      return;
-    }
-
-    // Check if the user has registered any startup
-    const myStartups = startups.filter(s => s.user_id === userId || s.owner_id === userId);
+    // Check if user has at least one startup registered
+    const myStartups = startups.filter(s => s.owner_id === userId);
     if (!myStartups || myStartups.length === 0) {
       container.innerHTML = `
         <div class="col-span-full flex flex-col items-center justify-center py-8">
-          <p class="text-gray-700 text-lg mb-4">Please register your startup to see registered startups.</p>
+          <p class="text-gray-700 text-lg mb-4">Please register your startup to see other registered startups.</p>
           <a href="register.html" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-medium shadow transition">Register your Startup</a>
         </div>
       `;
@@ -107,16 +100,18 @@
     }
 
     // Fetch invitations sent by this user once
-    const { data: sentInvitations, error: invitationsError } = await supabase
+    const { data: sentInvitations } = await supabase
       .from("invitations")
       .select("startup_id")
       .eq("sender_uid", userId);
-    const invitedStartups = new Set(sentInvitations?.map(inv => inv.startup_id));
 
-    // Render startup cards
+    const invitedStartups = new Set((sentInvitations || []).map(inv => inv.startup_id));
+
+    // Render all startups
     container.innerHTML = "";
     for (const startup of startups) {
       const invitationSent = invitedStartups.has(startup.id);
+      const isMyStartup = startup.owner_id === userId;
 
       const card = document.createElement("div");
       card.className = "bg-white p-6 rounded-lg shadow hover:shadow-lg transition flex flex-col justify-between";
@@ -128,16 +123,16 @@
           <p class="text-gray-600 mb-4">${startup.description}</p>
         </div>
         <button
-          class="mt-2 ${invitationSent ? "bg-green-500 text-white cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"} px-4 py-2 rounded transition font-medium invite-btn"
+          class="mt-2 ${invitationSent || isMyStartup ? "bg-green-500 text-white cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"} px-4 py-2 rounded transition font-medium invite-btn"
           data-startup-id="${startup.id}"
-          ${invitationSent ? "disabled" : ""}>
-          ${invitationSent ? "Invitation sent!" : "Invite to Collaborate"}
+          ${invitationSent || isMyStartup ? "disabled" : ""}>
+          ${isMyStartup ? "Your Startup" : invitationSent ? "Invitation Sent!" : "Invite to Collaborate"}
         </button>
       `;
 
       container.appendChild(card);
 
-      if (!invitationSent) {
+      if (!invitationSent && !isMyStartup) {
         const inviteBtn = card.querySelector(".invite-btn");
         inviteBtn.addEventListener("click", () => inviteToCollaborate(startup.id, inviteBtn));
       }
@@ -152,6 +147,7 @@
     window.location.href = "login.html";
   });
 </script>
+
 
 
 </body>
