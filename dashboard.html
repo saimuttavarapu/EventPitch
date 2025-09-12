@@ -82,13 +82,7 @@
 
     // Fetch startups and check user's owned startups
     async function loadStartups() {
-      // First, get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        container.innerHTML = `<p class="text-red-600">Authentication error. Please login again.</p>`;
-        return;
-      }
-      const userId = user.id;
+     
 
       // Fetch all startups
       const { data: startups, error: startupsError } = await supabase.from("startups").select("*");
@@ -102,7 +96,23 @@
         container.innerHTML = `<p class="text-gray-600 text-center col-span-full">No startups registered yet.</p>`;
         return;
       }
+      //just to check if the user has the session 
+        supabase.auth.onAuthStateChange(async (event, session) => {
+          if (session?.user) {
+            console.log("User UUID:", session.user.id);
+          } else {
+            console.log("No user logged in");
+          }
+        });
 
+     // First, get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        container.innerHTML = `<p class="text-red-600">Authentication error. Please login again.</p>`;
+        return;
+      }
+      const userId = user.id;
+      
       // Check if the current user has registered any startup
       // Assuming the "startups" table has a "user_id" or "owner_id" column
       // Try both, fallback to "user_id" as default
