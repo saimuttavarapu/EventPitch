@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications - StartupCollab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow p-4 flex justify-between">
+    <h1 class="text-xl font-bold text-blue-600">StartupCollab</h1>
+    <div>
+      <a href="dashboard.html" class="mx-2 text-gray-600 hover:text-blue-600">Dashboard</a>
+      <a href="register.html" class="mx-2 text-gray-600 hover:text-blue-600">Register Startup</a>
+      <a href="notifications.html" class="mx-2 text-blue-600 font-semibold">Notifications</a>
+      <button id="logoutBtn" class="mx-2 text-red-600 hover:underline">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Page Heading -->
+  <div class="max-w-4xl mx-auto mt-8 px-4">
+    <h2 class="text-3xl font-extrabold text-center text-gray-900 mb-4">Notifications</h2>
+    <p class="text-lg text-gray-700 text-center">Check invitations you’ve sent and requests received.</p>
+  </div>
+
+  <!-- Sections -->
+  <div class="max-w-4xl mx-auto mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
+    <!-- Invitations Sent -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Invitations You Sent</h3>
+      <ul id="sentInvitationsList" class="space-y-3 text-gray-700"></ul>
+    </div>
+
+    <!-- Requests Received -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Requests You Received</h3>
+      <ul id="receivedInvitationsList" class="space-y-3 text-gray-700"></ul>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co"; // replace with yours
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI"; // replace
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const sentList = document.getElementById("sentInvitationsList");
+    const receivedList = document.getElementById("receivedInvitationsList");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    async function loadNotifications() {
+      // get current user
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
+        sentList.innerHTML = `<li class="text-red-600">Please login again.</li>`;
+        receivedList.innerHTML = `<li class="text-red-600">Please login again.</li>`;
+        return;
+      }
+      const userId = user.id;
+
+      // ---- Invitations Sent ----
+      const { data: sent, error: sentError } = await supabase
+        .from("invitations")
+        .select("id, startup_id")
+        .eq("sender_uid", userId);
+
+      if (sentError) {
+        sentList.innerHTML = `<li class="text-red-600">Error loading sent invitations.</li>`;
+      } else if (!sent || sent.length === 0) {
+        sentList.innerHTML = `<li>No invitations sent yet. 🚀 Start collaborating!</li>`;
+      } else {
+        sentList.innerHTML = "";
+        for (const inv of sent) {
+          // fetch startup details
+          const { data: startup } = await supabase
+            .from("startups")
+            .select("name")
+            .eq("id", inv.startup_id)
+            .single();
+
+          sentList.innerHTML += `<li>Invitation sent to <strong>${startup?.name || "Unknown Startup"}</strong></li>`;
+        }
+      }
+
+      // ---- Requests Received ----
+      // get startups created by the current user
+      const { data: myStartups } = await supabase
+        .from("startups")
+        .select("id, name")
+        .eq("user_id", userId);
+
+      if (!myStartups || myStartups.length === 0) {
+        receivedList.innerHTML = `<li>You haven’t registered a startup yet.</li>`;
+        return;
+      }
+
+      const startupIds = myStartups.map(s => s.id);
+      const { data: received, error: recvError } = await supabase
+        .from("invitations")
+        .select("id, sender_uid, startup_id")
+        .in("startup_id", startupIds);
+
+      if (recvError) {
+        receivedList.innerHTML = `<li class="text-red-600">Error loading received invitations.</li>`;
+      } else if (!received || received.length === 0) {
+        receivedList.innerHTML = `<li>No requests received yet. Keep sending invitations so founders will notice and get back to you!</li>`;
+      } else {
+        receivedList.innerHTML = "";
+        for (const inv of received) {
+          // fetch sender user (auth.users)
+          const { data: sender } = await supabase.auth.admin.getUserById(inv.sender_uid);
+
+          // find startup name
+          const startup = myStartups.find(s => s.id === inv.startup_id);
+          receivedList.innerHTML += `<li><strong>${sender?.user?.email || "Unknown User"}</strong> invited you to collaborate on <strong>${startup?.name}</strong></li>`;
+        }
+      }
+    }
+
+    loadNotifications();
+
+    // Logout
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.href = "login.html";
+    });
+  </script>
+</body>
+</html>
