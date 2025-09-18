@@ -48,6 +48,7 @@
 
     const form = document.getElementById("registerForm");
     const message = document.getElementById("message");
+    const logoutBtn = document.getElementById("logoutBtn");
     
     // Check if user is logged in
     async function checkUser() {
@@ -90,6 +91,12 @@
         form.reset();
       }
     });
+
+  // Logout
+  logoutBtn.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    window.location.href = "login.html";
+  });
   </script>
 
 </body>
