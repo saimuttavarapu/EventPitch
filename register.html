@@ -26,9 +26,11 @@
 
     <form id="registerForm" class="mt-6 space-y-4">
       <input type="text" id="name" placeholder="Startup Name" class="w-full p-3 border rounded" required />
+      <input type="text" id="websitelink" placeholder="Website / Product Link(optional)" class="w-full p-3 border rounded" />
       <input type="email" id="email" placeholder="Contact Email" class="w-full p-3 border rounded" required />
-      <input type="text" id="industry" placeholder="Industry" class="w-full p-3 border rounded" required />
+      <input type="text" id="industry" placeholder="Industry / Sector" class="w-full p-3 border rounded" required />
       <textarea id="description" placeholder="Short Description" class="w-full p-3 border rounded"></textarea>
+      <input type="text" id="location" placeholder="Location of Your Headquarters" class="w-full p-3 border rounded" required />
 
       <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
         Register
@@ -68,14 +70,16 @@
       }
       const UID = user.id;
       const name = document.getElementById("name").value;
+      const websitelink = document.getElementById("websitelink").value;
       const email = document.getElementById("email").value;
       const industry = document.getElementById("industry").value;
       const description = document.getElementById("description").value;
+      const location = document.getElementById("location").value;
       
 
       const { data, error } = await supabase
         .from("startups")
-        .insert([{ name, email, industry, description, UID}]);
+        .insert([{ name, websitelink, email, industry, description, location, UID}]);
 
       if (error) {
         message.textContent = "❌ Error: " + error.message;
