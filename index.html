@@ -1,142 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StartupCollab - Collaborate & Grow</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-br from-gray-50 to-blue-50 text-gray-800">
-
-  <!-- Navbar -->
-  <header class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-blue-600">StartupCollab</h1>
-      <nav class="space-x-6 hidden md:flex">
-        <a href="#features" class="text-gray-600 hover:text-blue-600">Features</a>
-        <a href="#how-it-works" class="text-gray-600 hover:text-blue-600">How It Works</a>
-        <a href="#about" class="text-gray-600 hover:text-blue-600">About</a>
-        <a href="#contact" class="text-gray-600 hover:text-blue-600">Contact</a>
-      </nav>
-      <a href="#register" class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">Get Started</a>
-    </div>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="relative bg-gradient-to-r from-blue-100 via-white to-purple-100 pt-32 pb-20">
-    <div class="max-w-7xl mx-auto px-6 text-center">
-      <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900">Collaborate. Build. Grow.</h2>
-      <p class="mt-4 text-lg text-gray-600">Where entrepreneurs, innovators, and investors come together to shape the future.</p>
-      <div class="mt-6 flex justify-center gap-4">
-        <a href="#register" class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700">Register Startup</a>
-        <a href="#features" class="bg-white text-blue-600 px-6 py-3 rounded-lg border border-blue-600 hover:bg-blue-50">Learn More</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StartupCollab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 text-gray-800"
+  >
+    <!-- Top Navigation -->
+    <header
+      class="sticky top-0 bg-white/80 backdrop-blur-md shadow-sm z-50 transition duration-300"
+      data-aos="fade-down"
+    >
+      <div
+        class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4"
+      >
+        <h1 class="text-2xl font-extrabold text-indigo-600">StartupCollab</h1>
+        <nav class="space-x-6 font-medium text-gray-700">
+          <a href="#features" class="hover:text-indigo-600">Features</a>
+          <a href="#howitworks" class="hover:text-indigo-600">How It Works</a>
+          <a href="#about" class="hover:text-indigo-600">About</a>
+          <a href="#contact" class="hover:text-indigo-600">Contact</a>
+          <button
+            class="ml-4 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transition duration-300 transform hover:scale-105"
+          >
+            Register Startup
+          </button>
+        </nav>
       </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- Features -->
-  <section id="features" class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-      <h3 class="text-3xl font-bold text-center text-gray-800">Why Choose StartupCollab?</h3>
-      <p class="text-center text-gray-600 mt-2 mb-12">Our platform makes collaboration seamless and effective.</p>
-      <div class="grid md:grid-cols-3 gap-10">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl shadow hover:shadow-lg transition">
-          <div class="text-4xl">🚀</div>
-          <h4 class="mt-4 font-semibold text-xl">Launch Your Vision</h4>
-          <p class="text-gray-600 mt-2">Register your startup and showcase your innovative ideas to a community of like-minded entrepreneurs and investors.</p>
-        </div>
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl shadow hover:shadow-lg transition">
-          <div class="text-4xl">🤝</div>
-          <h4 class="mt-4 font-semibold text-xl">Find Perfect Collaborators</h4>
-          <p class="text-gray-600 mt-2">Connect with talented individuals who complement your skills. Discover projects and join initiatives that inspire you.</p>
-        </div>
-        <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl shadow hover:shadow-lg transition">
-          <div class="text-4xl">💡</div>
-          <h4 class="mt-4 font-semibold text-xl">Create & Join Events</h4>
-          <p class="text-gray-600 mt-2">Host pitch sessions, networking events, and workshops to attract talent and funding for your journey.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section id="how-it-works" class="py-20 bg-gradient-to-r from-blue-50 to-purple-50">
-    <div class="max-w-7xl mx-auto px-6 text-center">
-      <h3 class="text-3xl font-bold text-gray-800">How It Works</h3>
-      <p class="text-gray-600 mt-2 mb-12">Get started in three simple steps and unlock your potential.</p>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-2xl shadow">
-          <div class="text-2xl font-bold text-blue-600">1</div>
-          <h4 class="mt-4 font-semibold text-xl">Register Your Startup</h4>
-          <p class="text-gray-600 mt-2">Create your profile and showcase your startup idea, vision, and progress.</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow">
-          <div class="text-2xl font-bold text-purple-600">2</div>
-          <h4 class="mt-4 font-semibold text-xl">Connect & Collaborate</h4>
-          <p class="text-gray-600 mt-2">Browse profiles, join projects, and connect with other entrepreneurs and investors.</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow">
-          <div class="text-2xl font-bold text-green-600">3</div>
-          <h4 class="mt-4 font-semibold text-xl">Grow Together</h4>
-          <p class="text-gray-600 mt-2">Join events, build partnerships, and watch your startup ecosystem thrive.</p>
+    <!-- Hero Section -->
+    <section
+      class="text-center py-24 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white relative overflow-hidden"
+    >
+      <div class="absolute inset-0 bg-grid-white/[0.05]"></div>
+      <div class="relative z-10 max-w-3xl mx-auto" data-aos="zoom-in">
+        <h2 class="text-5xl font-extrabold leading-tight">
+          Collaborate. Innovate. Grow.
+        </h2>
+        <p class="mt-4 text-lg text-white/90">
+          StartupCollab helps entrepreneurs, investors, and innovators build the
+          future together.
+        </p>
+        <div class="mt-6 flex justify-center gap-4">
+          <button
+            class="px-6 py-3 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-gray-100 shadow-md transition transform hover:scale-105"
+          >
+            Get Started
+          </button>
+          <button
+            class="px-6 py-3 bg-indigo-800/60 text-white rounded-xl font-semibold hover:bg-indigo-900 shadow-md transition transform hover:scale-105"
+          >
+            Learn More
+          </button>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- About -->
-  <section id="about" class="py-20 bg-white">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-      <h3 class="text-3xl font-bold text-gray-800">Ready to Transform Your Startup Journey?</h3>
-      <p class="text-gray-600 mt-4">Join thousands of entrepreneurs, innovators, and investors who are already building the future together on StartupCollab.</p>
-      <a href="#register" class="mt-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700">Start Collaborating Today</a>
-    </div>
-  </section>
+    <!-- Features Section -->
+    <section id="features" class="max-w-7xl mx-auto px-6 py-20">
+      <h3
+        class="text-3xl font-bold text-center text-gray-800"
+        data-aos="fade-up"
+      >
+        Why Choose StartupCollab?
+      </h3>
+      <div class="mt-12 grid md:grid-cols-3 gap-10">
+        <div
+          class="p-6 bg-white shadow-lg rounded-2xl text-center hover:shadow-xl transition transform hover:-translate-y-2"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
+          <span class="text-5xl">🚀</span>
+          <h4 class="text-xl font-semibold mt-4">Launch Your Vision</h4>
+          <p class="mt-2 text-gray-600">
+            Register your startup and showcase your innovative ideas to
+            investors and collaborators.
+          </p>
+        </div>
+        <div
+          class="p-6 bg-white shadow-lg rounded-2xl text-center hover:shadow-xl transition transform hover:-translate-y-2"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
+          <span class="text-5xl">🤝</span>
+          <h4 class="text-xl font-semibold mt-4">Find Collaborators</h4>
+          <p class="mt-2 text-gray-600">
+            Connect with talented individuals who complement your skills and
+            join meaningful projects.
+          </p>
+        </div>
+        <div
+          class="p-6 bg-white shadow-lg rounded-2xl text-center hover:shadow-xl transition transform hover:-translate-y-2"
+          data-aos="fade-up"
+          data-aos-delay="300"
+        >
+          <span class="text-5xl">💡</span>
+          <h4 class="text-xl font-semibold mt-4">Create & Join Events</h4>
+          <p class="mt-2 text-gray-600">
+            Host networking events, pitch sessions, and workshops to attract
+            talent and funding.
+          </p>
+        </div>
+      </div>
+    </section>
 
-  <!-- Contact & Footer -->
-  <footer id="contact" class="bg-gray-900 text-gray-300 py-12">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
-      <div>
-        <h4 class="text-white font-semibold">Platform</h4>
-        <ul class="mt-3 space-y-2 text-sm">
-          <li><a href="#register" class="hover:text-white">Register Startup</a></li>
-          <li><a href="#features" class="hover:text-white">Find Collaborators</a></li>
-          <li><a href="#how-it-works" class="hover:text-white">Browse Events</a></li>
-          <li><a href="#" class="hover:text-white">Success Stories</a></li>
-        </ul>
+    <!-- How It Works -->
+    <section id="howitworks" class="bg-gray-50 py-20">
+      <div class="max-w-5xl mx-auto px-6 text-center">
+        <h3
+          class="text-3xl font-bold text-gray-800"
+          data-aos="fade-right"
+        >
+          How It Works
+        </h3>
+        <div class="mt-12 grid md:grid-cols-3 gap-10 text-left">
+          <div
+            class="p-6 bg-white rounded-2xl shadow-md transition transform hover:-translate-y-2"
+            data-aos="fade-up"
+          >
+            <h4 class="text-xl font-semibold text-indigo-600">1. Register</h4>
+            <p class="mt-2 text-gray-600">
+              Create your profile and showcase your startup idea and progress to
+              the community.
+            </p>
+          </div>
+          <div
+            class="p-6 bg-white rounded-2xl shadow-md transition transform hover:-translate-y-2"
+            data-aos="fade-up"
+            data-aos-delay="150"
+          >
+            <h4 class="text-xl font-semibold text-indigo-600">2. Connect</h4>
+            <p class="mt-2 text-gray-600">
+              Browse profiles, join projects, and connect with entrepreneurs,
+              developers, and investors.
+            </p>
+          </div>
+          <div
+            class="p-6 bg-white rounded-2xl shadow-md transition transform hover:-translate-y-2"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
+            <h4 class="text-xl font-semibold text-indigo-600">3. Grow</h4>
+            <p class="mt-2 text-gray-600">
+              Join events, build partnerships, and watch your startup ecosystem
+              flourish.
+            </p>
+          </div>
+        </div>
       </div>
-      <div>
-        <h4 class="text-white font-semibold">Community</h4>
-        <ul class="mt-3 space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white">Entrepreneurs</a></li>
-          <li><a href="#" class="hover:text-white">Investors</a></li>
-          <li><a href="#" class="hover:text-white">Developers</a></li>
-          <li><a href="#" class="hover:text-white">Designers</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-white font-semibold">Resources</h4>
-        <ul class="mt-3 space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white">Blog</a></li>
-          <li><a href="#" class="hover:text-white">Help Center</a></li>
-          <li><a href="#" class="hover:text-white">API Documentation</a></li>
-          <li><a href="#" class="hover:text-white">Terms of Service</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="text-white font-semibold">Company</h4>
-        <ul class="mt-3 space-y-2 text-sm">
-          <li><a href="#about" class="hover:text-white">About Us</a></li>
-          <li><a href="#contact" class="hover:text-white">Contact</a></li>
-          <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
-          <li><a href="#" class="hover:text-white">Careers</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="mt-10 text-center text-sm text-gray-500">
-      © 2025 StartupCollab. All rights reserved. Building the future of entrepreneurial collaboration.
-    </div>
-  </footer>
+    </section>
 
-</body>
+    <!-- About -->
+    <section
+      id="about"
+      class="py-20 bg-gradient-to-r from-purple-50 to-indigo-50"
+    >
+      <div class="max-w-4xl mx-auto text-center px-6" data-aos="zoom-in-up">
+        <h3 class="text-3xl font-bold text-gray-800">About StartupCollab</h3>
+        <p class="mt-6 text-gray-600 leading-relaxed">
+          Join thousands of entrepreneurs, innovators, and investors building
+          the future together on StartupCollab.
+        </p>
+        <button
+          class="mt-6 px-6 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transition transform hover:scale-105"
+        >
+          Start Collaborating Today
+        </button>
+      </div>
+    </section>
+
+    <!-- Contact / Footer -->
+    <footer id="contact" class="bg-gray-900 text-gray-300 py-12">
+      <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 px-6">
+        <div data-aos="fade-up">
+          <h4 class="font-semibold text-white mb-4">Platform</h4>
+          <ul class="space-y-2">
+            <li>Register Startup</li>
+            <li>Find Collaborators</li>
+            <li>Browse Events</li>
+            <li>Success Stories</li>
+          </ul>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="100">
+          <h4 class="font-semibold text-white mb-4">Community</h4>
+          <ul class="space-y-2">
+            <li>Entrepreneurs</li>
+            <li>Investors</li>
+            <li>Developers</li>
+            <li>Designers</li>
+          </ul>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="200">
+          <h4 class="font-semibold text-white mb-4">Resources</h4>
+          <ul class="space-y-2">
+            <li>Blog</li>
+            <li>Help Center</li>
+            <li>API Docs</li>
+            <li>Terms of Service</li>
+          </ul>
+        </div>
+        <div data-aos="fade-up" data-aos-delay="300">
+          <h4 class="font-semibold text-white mb-4">Company</h4>
+          <ul class="space-y-2">
+            <li>About Us</li>
+            <li>Contact</li>
+            <li>Privacy Policy</li>
+            <li>Careers</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 text-center text-gray-500 text-sm">
+        © 2025 StartupCollab. All rights reserved.
+      </div>
+    </footer>
+
+    <!-- AOS Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 80,
+      });
+    </script>
+  </body>
 </html>
