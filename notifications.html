@@ -89,7 +89,7 @@
       const { data: myStartups } = await supabase
         .from("startups")
         .select("id, name")
-        .eq("user_id", userId);
+        .eq("UID", userId);
 
       if (!myStartups || myStartups.length === 0) {
         receivedList.innerHTML = `<li>You haven’t recieved any requests.</li>`;
