@@ -27,27 +27,40 @@
       Browse registered startups and find the right partners to co-create, attract investors, and scale faster.
     </p>
   </div>
-  <!-- Search Bar -->
+  <!-- Search Bar with Button -->
   <div class="max-w-6xl mx-auto mb-4 px-4 flex justify-center">
-    <input
-      id="searchInput"
-      type="text"
-      placeholder="Search startups..."
-      class="w-full md:w-1/2 px-4 py-2 border rounded shadow focus:outline-none focus:ring"
-    />
+    <div class="w-full md:w-1/2 flex">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search startups..."
+        class="flex-grow px-4 py-2 border rounded-l shadow focus:outline-none focus:ring"
+      />
+      <button
+        id="searchBtn"
+        class="px-4 py-2 bg-blue-600 text-white rounded-r shadow hover:bg-blue-700 transition"
+      >
+        Search
+      </button>
+    </div>
   </div>
 
   <section class="max-w-6xl mx-auto mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="startupContainer">
     <!-- Startup cards will be injected here -->
   </section>
   <script>
-  const SUPABASE_URL = "https://mxydshsxgxdhcgoveocx.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14eWRzaHN4Z3hkaGNnb3Zlb2N4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODAzNTIsImV4cCI6MjA3MzE1NjM1Mn0.cvjGuvuY1z6WM6kjuGympgeDHfRMcLlOPf4Z8TjLxZI";
+  const SUPABASE_URL = "{{ SUPABASE_URL }}";
+  const SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY }}";
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const container = document.getElementById("startupContainer");
   const logoutBtn = document.getElementById("logoutBtn");
-  let allStartups = []; // Store all startups for filtering
+  const searchInput = document.getElementById("searchInput");
+  const searchBtn = document.getElementById("searchBtn");
+
+  let allStartups = [];
+  let invitedStartups = new Set();
+  let userId = null;
 
   // Redirect to login if user not logged in
   async function checkUser() {
@@ -79,6 +92,8 @@
       alert("Failed to send invitation: " + error.message);
     } else {
       alert("✅ Invitation sent successfully! we will inform the founder");
+      invitedStartups.add(startupId);
+      renderStartups(filteredStartups(), userId, invitedStartups);
     }
   }
 
@@ -89,7 +104,7 @@
       container.innerHTML = `<p class="text-red-600">Authentication error. Please login again.</p>`;
       return;
     }
-    const userId = user.id;
+    userId = user.id;
 
     // Fetch all startups
     const { data: startups, error: startupsError } = await supabase.from("startups").select("*");
@@ -97,7 +112,7 @@
       container.innerHTML = `<p class="text-red-600">Error loading startups: ${startupsError.message}</p>`;
       return;
     }
-    allStartups = startups; // Save for filtering
+    allStartups = startups;
 
     // Check if user has at least one startup registered
     const myStartups = startups.filter(s => s.UID === userId);
@@ -117,13 +132,29 @@
       .select("startup_id")
       .eq("sender_uid", userId);
 
-    const invitedStartups = new Set((sentInvitations || []).map(inv => inv.startup_id));
+    invitedStartups = new Set((sentInvitations || []).map(inv => inv.startup_id));
 
     // Render all startups
     renderStartups(allStartups, userId, invitedStartups);
   }
 
-  // Render startups based on filter
+  function normalizeString(str) {
+    return (str || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function filteredStartups() {
+    const query = normalizeString(searchInput.value);
+    if (!query) return allStartups;
+    return allStartups.filter(s =>
+      normalizeString(s.name).includes(query) ||
+      normalizeString(s.industry).includes(query) ||
+      normalizeString(s.description).includes(query)
+    );
+  }
+
   function renderStartups(startups, userId, invitedStartups) {
     container.innerHTML = "";
     for (const startup of startups) {
@@ -156,39 +187,26 @@
     }
   }
 
-  loadStartups();
-
-  // Search filter
-  document.getElementById("searchInput").addEventListener("input", function(e) {
-    const query = e.target.value.toLowerCase();
-    // Filter by name, industry, or description
-    const filtered = allStartups.filter(s =>
-      s.name.toLowerCase().includes(query) ||
-      s.industry.toLowerCase().includes(query) ||
-      s.description.toLowerCase().includes(query)
-    );
-    // Get current user and invitations for correct rendering
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      const userId = user?.id;
-      supabase
-        .from("invitations")
-        .select("startup_id")
-        .eq("sender_uid", userId)
-        .then(({ data: sentInvitations }) => {
-          const invitedStartups = new Set((sentInvitations || []).map(inv => inv.startup_id));
-          renderStartups(filtered, userId, invitedStartups);
-        });
-    });
+  // Search on button click
+  searchBtn.addEventListener("click", () => {
+    renderStartups(filteredStartups(), userId, invitedStartups);
   });
+
+  // Optional: Search on Enter key
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      renderStartups(filteredStartups(), userId, invitedStartups);
+    }
+  });
+
+  // Initial load
+  loadStartups();
 
   // Logout
   logoutBtn.addEventListener("click", async () => {
     await supabase.auth.signOut();
     window.location.href = "login.html";
   });
-</script>
-
-
-
+  </script>
 </body>
 </html>
