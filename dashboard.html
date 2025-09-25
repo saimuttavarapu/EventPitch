@@ -49,8 +49,10 @@
     <!-- Startup cards will be injected here -->
   </section>
   <script>
-  const SUPABASE_URL = "{{ SUPABASE_URL }}";
-  const SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY }}";
+  const SUPABASE_URL = "{{SUPABASE_URL}}";
+  console.log("SUPABASE_URL:", SUPABASE_URL);
+  const SUPABASE_ANON_KEY = "{{SUPABASE_ANON_KEY}}";
+  console.log("SUPABASE_ANON_KEY:", SUPABASE_ANON_KEY);
 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const container = document.getElementById("startupContainer");
