@@ -27,6 +27,15 @@
       Browse registered startups and find the right partners to co-create, attract investors, and scale faster.
     </p>
   </div>
+  <!-- Search Bar -->
+  <div class="max-w-6xl mx-auto mb-4 px-4 flex justify-center">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search startups..."
+      class="w-full md:w-1/2 px-4 py-2 border rounded shadow focus:outline-none focus:ring"
+    />
+  </div>
 
   <section class="max-w-6xl mx-auto mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="startupContainer">
     <!-- Startup cards will be injected here -->
@@ -38,6 +47,7 @@
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const container = document.getElementById("startupContainer");
   const logoutBtn = document.getElementById("logoutBtn");
+  let allStartups = []; // Store all startups for filtering
 
   // Redirect to login if user not logged in
   async function checkUser() {
@@ -87,6 +97,7 @@
       container.innerHTML = `<p class="text-red-600">Error loading startups: ${startupsError.message}</p>`;
       return;
     }
+    allStartups = startups; // Save for filtering
 
     // Check if user has at least one startup registered
     const myStartups = startups.filter(s => s.UID === userId);
@@ -109,6 +120,11 @@
     const invitedStartups = new Set((sentInvitations || []).map(inv => inv.startup_id));
 
     // Render all startups
+    renderStartups(allStartups, userId, invitedStartups);
+  }
+
+  // Render startups based on filter
+  function renderStartups(startups, userId, invitedStartups) {
     container.innerHTML = "";
     for (const startup of startups) {
       const invitationSent = invitedStartups.has(startup.id);
@@ -141,6 +157,29 @@
   }
 
   loadStartups();
+
+  // Search filter
+  document.getElementById("searchInput").addEventListener("input", function(e) {
+    const query = e.target.value.toLowerCase();
+    // Filter by name, industry, or description
+    const filtered = allStartups.filter(s =>
+      s.name.toLowerCase().includes(query) ||
+      s.industry.toLowerCase().includes(query) ||
+      s.description.toLowerCase().includes(query)
+    );
+    // Get current user and invitations for correct rendering
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      const userId = user?.id;
+      supabase
+        .from("invitations")
+        .select("startup_id")
+        .eq("sender_uid", userId)
+        .then(({ data: sentInvitations }) => {
+          const invitedStartups = new Set((sentInvitations || []).map(inv => inv.startup_id));
+          renderStartups(filtered, userId, invitedStartups);
+        });
+    });
+  });
 
   // Logout
   logoutBtn.addEventListener("click", async () => {
