@@ -84,6 +84,40 @@
         }
       }
 
+      // // ---- Requests Received ----
+      // // get startups created by the current user
+      // const { data: myStartups } = await supabase
+      //   .from("startups")
+      //   .select("id, name")
+      //   .eq("creator_uid", userId);
+
+      // if (!myStartups || myStartups.length === 0) {
+      //   receivedList.innerHTML = `<li>You haven’t created any startups.</li>`;
+      //   return;
+      // }
+
+      // const startupIds = myStartups.map(s => s.id);
+      // const { data: received, error: recvError } = await supabase
+      //   .from("invitations")
+      //   .select("id, sender_uid, startup_id, receiver_uid, created_at") 
+      //   .eq("receiver_uid", userId);
+
+      // if (recvError) {
+      //   receivedList.innerHTML = `<li class="text-red-600">Error loading received invitations.</li>`;
+      // } else if (!received || received.length === 0) {
+      //   receivedList.innerHTML = `<li>No requests received yet. Keep sending invitations so founders will notice and get back to you!</li>`;
+      // } else {
+      //   receivedList.innerHTML = "";
+      //   for (const inv of received) {
+      //     // fetch sender user (auth.users)
+      //     const { data: sender } = await supabase.auth.admin.getUserById(inv.sender_uid);
+
+      //     // find startup name
+      //     const startup = myStartups.find(s => s.id === inv.startup_id);
+      //     receivedList.innerHTML += `<li><strong>${sender?.user?.email || "Unknown User"}</strong> invited you to collaborate on <strong>${startup?.name}</strong></li>`;
+      //   }
+      // }
+            // ...existing code...
       // ---- Requests Received ----
       // get startups created by the current user
       const { data: myStartups } = await supabase
@@ -96,10 +130,10 @@
         return;
       }
 
-      const startupIds = myStartups.map(s => s.id);
+      // Get invitations where current user is receiver
       const { data: received, error: recvError } = await supabase
         .from("invitations")
-        .select("id, sender_uid, startup_id, receiver_uid, created_at") 
+        .select("id, sender_uid, startup_id, receiver_uid, created_at")
         .eq("receiver_uid", userId);
 
       if (recvError) {
@@ -109,14 +143,32 @@
       } else {
         receivedList.innerHTML = "";
         for (const inv of received) {
-          // fetch sender user (auth.users)
-          const { data: sender } = await supabase.auth.admin.getUserById(inv.sender_uid);
+          // Fetch sender email
+          let senderEmail = "Unknown User";
+          try {
+            const { data: senderUser } = await supabase
+              .from("users")
+              .select("email")
+              .eq("id", inv.sender_uid)
+              .single();
+            if (senderUser && senderUser.email) senderEmail = senderUser.email;
+          } catch {}
 
-          // find startup name
-          const startup = myStartups.find(s => s.id === inv.startup_id);
-          receivedList.innerHTML += `<li><strong>${sender?.user?.email || "Unknown User"}</strong> invited you to collaborate on <strong>${startup?.name}</strong></li>`;
+          // Fetch startup name
+          let startupName = "Unknown Startup";
+          try {
+            const { data: startup } = await supabase
+              .from("startups")
+              .select("name")
+              .eq("id", inv.startup_id)
+              .single();
+            if (startup && startup.name) startupName = startup.name;
+          } catch {}
+
+          receivedList.innerHTML += `<li><strong>${senderEmail}</strong> invited you to collaborate on <strong>${startupName}</strong> (${new Date(inv.created_at).toLocaleString()})</li>`;
         }
       }
+      // ...existing code...
     }
 
     loadNotifications();
