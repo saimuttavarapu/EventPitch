@@ -29,7 +29,7 @@
       <input type="password" id="re_password" placeholder="re enter Password" class="w-full p-3 border rounded" required />
       <input type="text" id="firstName" placeholder="First Name" class="w-full p-3 border rounded" required/>
       <input type="text" id="lastName" placeholder="Last Name" class="w-full p-3 border rounded" required/>
-      <input type="text" id="linkedin" placeholder="LinkedIN profile Link" class="w-full p-3 border rounded"/>
+      <input type="text" id="linkedin" placeholder="LinkedIN profile Link (Optional)" class="w-full p-3 border rounded"/>
       <input type="text" id="country" placeholder="Country (Optional)" class="w-full p-3 border rounded" />
 
       <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700">
@@ -58,14 +58,14 @@
       const password = document.getElementById("password").value;
       const first_name = document.getElementById("firstName").value;
       const last_name = document.getElementById("lastName").value;
-      const linkedin = document.getElementById("linkedin").value;
+      const linkedinprofile = document.getElementById("linkedin").value;
       const country = document.getElementById("country").value;
 
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { first_name: first_name, last_name:last_name, linkedinprofile:linkedin , country: country } // optional user metadata
+          data: { first_name: first_name, last_name:last_name, linkedinprofile:linkedinprofile , country: country } // optional user metadata
         }
       });
 
