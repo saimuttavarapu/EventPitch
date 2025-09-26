@@ -70,7 +70,7 @@
   checkUser();
 
   // Invite button handler
-  async function inviteToCollaborate(startupId, button) {
+  async function inviteToCollaborate(startupId, creator_uid, button) {
     button.disabled = true;
     button.textContent = "Invitation sent!";
     button.classList.add("bg-green-500", "text-white", "cursor-not-allowed");
@@ -83,9 +83,10 @@
     }
 
     const senderUid = user.id;
+    const creator_uid = "abc";
     const { error } = await supabase
       .from("invitations")
-      .insert([{ sender_uid: senderUid, startup_id: startupId }]);
+      .insert([{ sender_uid: senderUid, startup_id: startupId, creator_uid:creator_uid }]);
 
     if (error) {
       console.error("Error sending invitation:", error);
@@ -182,7 +183,7 @@
 
       if (!invitationSent && !isMyStartup) {
         const inviteBtn = card.querySelector(".invite-btn");
-        inviteBtn.addEventListener("click", () => inviteToCollaborate(startup.id, inviteBtn));
+        inviteBtn.addEventListener("click", () => inviteToCollaborate(startup.id, startup.creator_uid, inviteBtn));
       }
     }
   }
