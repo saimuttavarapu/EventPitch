@@ -86,7 +86,7 @@
  
     const { error } = await supabase
       .from("invitations")
-      .insert([{ sender_uid: senderUid, startup_id: startupId, creator_uid:creator_uid }]);
+      .insert([{ sender_uid: senderUid, startup_id: startupId, receiver_uid:creator_uid }]);
 
     if (error) {
       console.error("Error sending invitation:", error);

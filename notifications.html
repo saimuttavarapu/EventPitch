@@ -89,7 +89,7 @@
       const { data: myStartups } = await supabase
         .from("startups")
         .select("id, name")
-        .eq("UID", userId);
+        .eq("creator_uid", userId);
 
       if (!myStartups || myStartups.length === 0) {
         receivedList.innerHTML = `<li>You haven’t recieved any requests.</li>`;
@@ -99,8 +99,8 @@
       const startupIds = myStartups.map(s => s.id);
       const { data: received, error: recvError } = await supabase
         .from("invitations")
-        .select("id, sender_uid, startup_id")
-        .in("startup_id", startupIds);
+        .select("id, sender_uid, startup_id, receiver_uid, created_at") 
+        .in("receiver_uid", userId);
 
       if (recvError) {
         receivedList.innerHTML = `<li class="text-red-600">Error loading received invitations.</li>`;
