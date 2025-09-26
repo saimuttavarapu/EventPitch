@@ -135,10 +135,12 @@
         .from("invitations")
         .select("id, sender_uid, startup_id, receiver_uid, created_at")
         .eq("receiver_uid", userId);
+        console.log("Received invitations:", received);
 
       if (recvError) {
         receivedList.innerHTML = `<li class="text-red-600">Error loading received invitations.</li>`;
       } else if (!received || received.length === 0) {
+        console.log("No received invitations:", received.length);
         receivedList.innerHTML = `<li>No requests received yet. Keep sending invitations so founders will notice and get back to you!</li>`;
       } else {
         receivedList.innerHTML = "";
@@ -149,7 +151,7 @@
             const { data: senderUser } = await supabase
               .from("users")
               .select("email")
-              .eq("id", inv.sender_uid)
+              .eq("UID", inv.sender_uid)
               .single();
             if (senderUser && senderUser.email) senderEmail = senderUser.email;
           } catch {}
