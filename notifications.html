@@ -121,9 +121,12 @@
       // ---- Requests Received ----
       // get startups created by the current user
       const { data: myStartups } = await supabase
-        .from("startups")
-        .select("id, name")
-        .eq("creator_uid", userId);
+        .from("invitations")
+        .select("id, sender_uid, startup_id, receiver_uid")
+        .eq("receiver_uid", userId);
+        // .from("startups")
+        // .select("id, name")
+        // .eq("creator_uid", userId);
       console.log("My startups:", myStartups);
       console.log("userId used for query:", userId);
 
