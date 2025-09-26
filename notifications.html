@@ -135,8 +135,8 @@
       // Get invitations where current user is receiver
       const { data: received, error: recvError } = await supabase
         .from("invitations")
-        .select("id, sender_uid, startup_id, receiver_uid")
-        .eq("receiver_uid", userId);
+        .select("id, sender_uid, startup_id, receiver_uid");
+        // .eq("receiver_uid", userId);
         console.log("Received invitations:", received);
         console.log("Received error:", recvError);
         // console.log("receiver_uid:", receiver_uid);
