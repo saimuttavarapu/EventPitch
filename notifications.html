@@ -136,6 +136,7 @@
         .select("id, sender_uid, startup_id, receiver_uid, created_at")
         .eq("receiver_uid", userId);
         console.log("Received invitations:", received);
+        console.log("Received error:", recvError);
 
       if (recvError) {
         receivedList.innerHTML = `<li class="text-red-600">Error loading received invitations.</li>`;
