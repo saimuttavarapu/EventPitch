@@ -115,7 +115,7 @@
     allStartups = startups;
 
     // Check if user has at least one startup registered
-    const myStartups = startups.filter(s => s.UID === userId);
+    const myStartups = startups.filter(s => s.creator_uid === userId);
     if (!myStartups || myStartups.length === 0) {
       container.innerHTML = `
         <div class="col-span-full flex flex-col items-center justify-center py-8">
