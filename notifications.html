@@ -153,10 +153,13 @@
           let senderEmail = "Unknown User";
           try {
             const { data: senderUser } = await supabase
-              .from("auth.users")
+              .from("startups") // <- was "users", changed to "auth.users"
               .select("email")
-              .eq("id", inv.sender_uid)
+              .eq("creator_uid", inv.receiver_uid) // <- was "id", changed to "creator_uid"
               .single();
+
+              console.log("Sender user data:", senderUser);
+              console.log("Sender user email:", senderUser?.email);
             if (senderUser && senderUser.email) senderEmail = senderUser.email;
           } catch {}
 
