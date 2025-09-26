@@ -151,27 +151,28 @@
         for (const inv of received) {
           // Fetch sender email
           let senderEmail = "Unknown User";
-          try {
-            const { data: senderUser } = await supabase
-              .from("startups") // <- was "users", changed to "auth.users"
-              .select("email")
-              .eq("creator_uid", inv.receiver_uid) // <- was "id", changed to "creator_uid"
-              .single();
+          // try {
+          //   const { data: senderUser } = await supabase
+          //     .from("startups") // <- was "users", changed to "auth.users"
+          //     .select("email")
+          //     .eq("creator_uid", inv.receiver_uid) // <- was "id", changed to "creator_uid"
+          //     .single();
 
-              console.log("Sender user data:", senderUser);
-              console.log("Sender user email:", senderUser?.email);
-            if (senderUser && senderUser.email) senderEmail = senderUser.email;
-          } catch {}
+          //     console.log("Sender user data:", senderUser);
+          //     console.log("Sender user email:", senderUser?.email);
+          //   if (senderUser && senderUser.email) senderEmail = senderUser.email;
+          // } catch {}
 
           // Fetch startup name
           let startupName = "Unknown Startup";
           try {
             const { data: startup } = await supabase
               .from("startups")
-              .select("name")
+              .select("name, email")
               .eq("id", inv.startup_id)
               .single();
             if (startup && startup.name) startupName = startup.name;
+            if (startup && startup.email) senderEmail = startup.email;
           } catch {}
 
           receivedList.innerHTML += `<li><strong>${senderEmail}</strong> invited you to collaborate on <strong>${startupName}</strong> (${new Date(inv.created_at).toLocaleString()})</li>`;
