@@ -121,14 +121,10 @@
       // ---- Requests Received ----
       // get startups created by the current user
       const { data: myStartups } = await supabase
-        .from("invitations")
-        .select("id, sender_uid, startup_id, receiver_uid")
-        .eq("receiver_uid", userId);
-        // .from("startups")
-        // .select("id, name")
-        // .eq("creator_uid", userId);
-      console.log("My startups:", myStartups);
-      console.log("userId used for query:", userId);
+        .from("startups")
+        .select("id, name")
+        .eq("creator_uid", userId);
+
 
       if (!myStartups || myStartups.length === 0) {
         receivedList.innerHTML = `<li>You haven’t created any startups.</li>`;
@@ -138,12 +134,12 @@
       // Get invitations where current user is receiver
       const { data: received, error: recvError } = await supabase
         .from("invitations")
-        .select("id, sender_uid, startup_id, receiver_uid");
-        // .eq("receiver_uid", userId);
-        console.log("Received invitations:", received);
-        console.log("Received error:", recvError);
-        // console.log("receiver_uid:", receiver_uid);
-        console.log("userId:", userId);
+        .select("id, sender_uid, startup_id, receiver_uid, created_at")
+        .eq("receiver_uid", userId);
+        // console.log("Received invitations:", received);
+        // console.log("Received error:", recvError);
+        // // console.log("receiver_uid:", receiver_uid);
+        // console.log("userId:", userId);
 
       if (recvError) {
         receivedList.innerHTML = `<li class="text-red-600">Error loading received invitations.</li>`;
@@ -159,7 +155,7 @@
             const { data: senderUser } = await supabase
               .from("users")
               .select("email")
-              .eq("UID", inv.sender_uid)
+              .eq("id", inv.sender_uid)
               .single();
             if (senderUser && senderUser.email) senderEmail = senderUser.email;
           } catch {}
