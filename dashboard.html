@@ -83,7 +83,7 @@
     }
 
     const senderUid = user.id;
-    const creator_uid = "abc";
+ 
     const { error } = await supabase
       .from("invitations")
       .insert([{ sender_uid: senderUid, startup_id: startupId, creator_uid:creator_uid }]);
