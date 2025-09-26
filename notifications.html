@@ -124,6 +124,8 @@
         .from("startups")
         .select("id, name")
         .eq("creator_uid", userId);
+      console.log("My startups:", myStartups);
+      console.log("userId used for query:", userId);
 
       if (!myStartups || myStartups.length === 0) {
         receivedList.innerHTML = `<li>You haven’t created any startups.</li>`;
@@ -133,7 +135,7 @@
       // Get invitations where current user is receiver
       const { data: received, error: recvError } = await supabase
         .from("invitations")
-        .select("id, sender_uid, startup_id, receiver_uid, created_at")
+        .select("id, sender_uid, startup_id, receiver_uid")
         .eq("receiver_uid", userId);
         console.log("Received invitations:", received);
         console.log("Received error:", recvError);
