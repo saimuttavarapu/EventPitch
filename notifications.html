@@ -92,7 +92,7 @@
         .eq("creator_uid", userId);
 
       if (!myStartups || myStartups.length === 0) {
-        receivedList.innerHTML = `<li>You haven’t recieved any requests.</li>`;
+        receivedList.innerHTML = `<li>You haven’t created any startups.</li>`;
         return;
       }
 
@@ -100,7 +100,7 @@
       const { data: received, error: recvError } = await supabase
         .from("invitations")
         .select("id, sender_uid, startup_id, receiver_uid, created_at") 
-        .in("receiver_uid", userId);
+        .eq("receiver_uid", userId);
 
       if (recvError) {
         receivedList.innerHTML = `<li class="text-red-600">Error loading received invitations.</li>`;
