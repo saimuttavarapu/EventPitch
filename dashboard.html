@@ -167,7 +167,11 @@
 
       card.innerHTML = `
         <div>
-          <h3 class="text-xl font-bold text-gray-800 mb-2">${startup.name}</h3>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">
+            <a href="${startup.websitelink}" target="_blank" rel="noopener noreferrer" class="hover:underline text-blue-700">
+              ${startup.name}
+            </a>
+          </h3>
           <p class="text-gray-600 mb-1"><strong>Industry:</strong> ${startup.industry}</p>
           <p class="text-gray-600 mb-4">${startup.description}</p>
         </div>
